@@ -39,6 +39,12 @@ class HyperliquidSettings(BaseModel):
             return "https://api.hyperliquid-testnet.xyz"
         return "https://api.hyperliquid.xyz"
 
+class LLMSettings:
+    def __init__(self):
+        self.anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
+        self.model: str = "claude-sonnet-4-20250514"
+        self.max_tokens: int = 2000
+        self.temperature: float = 0.1
 
 class TradingSettings(BaseModel):
     max_position_size_pct: float = float(os.getenv("MAX_POSITION_SIZE_PCT", "20"))
@@ -49,11 +55,13 @@ class TradingSettings(BaseModel):
     trading_coins: List[str] = os.getenv("TRADING_COINS", "BTC,ETH,SOL").split(",")
 
 
-class Settings(BaseModel):
-    database: DatabaseSettings = DatabaseSettings()
-    hyperliquid: HyperliquidSettings = HyperliquidSettings()
-    trading: TradingSettings = TradingSettings()
-    root_dir: Path = ROOT_DIR
+class Settings:
+    def __init__(self):
+        self.database = DatabaseSettings()
+        self.hyperliquid = HyperliquidSettings()
+        self.llm = LLMSettings()
+        self.trading = TradingSettings()
+        self.root_dir = ROOT_DIR
 
 
 settings = Settings()
@@ -61,3 +69,5 @@ settings = Settings()
 if __name__ == "__main__":
     print(f"DB: {settings.database.connection_string}")
     print(f"HL Testnet: {settings.hyperliquid.testnet}")
+    print(f"LLM API Key: {'SET' if settings.llm.anthropic_api_key else 'NOT SET'}")
+    print(f"Coins: {settings.trading.trading_coins}")
