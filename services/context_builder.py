@@ -8,6 +8,7 @@ import json
 
 from services.technical_analysis import TechnicalAnalysisService
 from services.sentiment_service import SentimentService
+from services.news_service import NewsService
 from config.settings import settings
 
 
@@ -15,6 +16,7 @@ class ContextBuilder:
     def __init__(self):
         self.ta_service = TechnicalAnalysisService()
         self.sentiment_service = SentimentService()
+        self.news_service = NewsService()
     
     def build_context(self, coins: List[str] = None) -> Dict[str, Any]:
         """Costruisce il context completo per l'LLM"""
@@ -22,12 +24,15 @@ class ContextBuilder:
             coins = settings.trading.trading_coins
         
         sentiment = self.sentiment_service.get_sentiment_summary()
+        news = self.news_service.get_news_summary(coins)
+
         
         context = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "portfolio": self._get_portfolio(),
             "market": {},
             "sentiment": sentiment,
+            "news": news,
             "risk_params": {
                 "max_position_size_pct": settings.trading.max_position_size_pct,
                 "max_total_exposure_pct": settings.trading.max_total_exposure_pct,
@@ -61,6 +66,7 @@ class ContextBuilder:
         """Converte il context in formato leggibile per l'LLM"""
         context = self.build_context(coins)
         sentiment = context['sentiment']
+        news = context['news']
         
         prompt = f"""
 === MARKET CONTEXT ===
@@ -78,6 +84,14 @@ Signal: {sentiment['overall_signal']}
 Bias: {sentiment['overall_bias']}
 Score: {sentiment['sentiment_score']}
 
+=== NEWS ===
+News Sentiment: {news.get('sentiment_summary', 'N/A')} (Bullish: {news.get('bullish_count', 0)}, Bearish: {news.get('bearish_count', 0)})
+Recent Headlines:
+"""
+        for headline in news.get('headlines', [])[:5]:
+            prompt += f"- {headline}\n"
+        
+        prompt += """
 === MARKET DATA ===
 """
         

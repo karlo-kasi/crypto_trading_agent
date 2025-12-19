@@ -62,6 +62,8 @@ class Settings:
         self.llm = LLMSettings()
         self.trading = TradingSettings()
         self.root_dir = ROOT_DIR
+        self.cryptopanic_api_key = os.getenv("CRYPTOPANIC_API_KEY", "")
+
 
 
 settings = Settings()
