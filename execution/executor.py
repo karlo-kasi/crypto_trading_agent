@@ -285,8 +285,12 @@ class TradingExecutor:
                 sl_pct = float(decision.get("stop_loss_pct", 3)) / 100
                 tp_pct = float(decision.get("take_profit_pct", 6)) / 100
                 
-                sl_price = round(entry_price * (1 - sl_pct), 1)
-                tp_price = round(entry_price * (1 + tp_pct), 1)
+                if coin == "BTC":
+                  sl_price = round(entry_price * (1 - sl_pct))
+                  tp_price = round(entry_price * (1 + tp_pct))
+                else:
+                  sl_price = round(entry_price * (1 - sl_pct), 1)
+                  tp_price = round(entry_price * (1 + tp_pct), 1)
                 
                 sl_result = self.place_stop_loss(coin, False, size_coins, sl_price)
                 result["stop_loss"] = sl_result
@@ -309,8 +313,12 @@ class TradingExecutor:
                 sl_pct = float(decision.get("stop_loss_pct", 3)) / 100
                 tp_pct = float(decision.get("take_profit_pct", 6)) / 100
                 
-                sl_price = round(entry_price * (1 + sl_pct), 1)
-                tp_price = round(entry_price * (1 - tp_pct), 1)
+                if coin == "BTC":
+                  sl_price = round(entry_price * (1 - sl_pct))
+                  tp_price = round(entry_price * (1 + tp_pct))
+                else:
+                  sl_price = round(entry_price * (1 - sl_pct), 1)
+                  tp_price = round(entry_price * (1 + tp_pct), 1)
                 
                 sl_result = self.place_stop_loss(coin, True, size_coins, sl_price)
                 result["stop_loss"] = sl_result
