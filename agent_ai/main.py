@@ -168,35 +168,21 @@ class TradingBot:
 
 
 def main():
+    """
+    Esegue un singolo ciclo di trading.
+    Progettato per essere chiamato da Railway cron job ogni 15 minuti.
+    """
     print("""
     ╔═══════════════════════════════════════════════════════════╗
     ║           🤖 CRYPTO TRADING BOT v1.0                      ║
     ║           AI-Powered Trading on Hyperliquid               ║
     ╚═══════════════════════════════════════════════════════════╝
     """)
-    
-    print("Choose mode:")
-    print("  1. Run once (single analysis)")
-    print("  2. Run loop (continuous trading)")
-    print("  3. Show status only")
-    print("  4. Exit")
-    
-    choice = input("\nEnter choice (1-4): ").strip()
-    
+
     bot = TradingBot()
-    
-    if choice == "1":
-        bot.run_once(auto_execute=False)
-    elif choice == "2":
-        interval = input("Interval in minutes (default 60): ").strip()
-        interval = int(interval) if interval else 60
-        bot.run_loop(interval_minutes=interval)
-    elif choice == "3":
-        bot.show_status()
-    elif choice == "4":
-        print("👋 Bye!")
-    else:
-        print("Invalid choice")
+    bot.run_once(auto_execute=True)
+
+    print("\n✅ Cycle completed. Waiting for next Railway cron trigger...")
 
 
 if __name__ == "__main__":
