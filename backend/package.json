@@ -1,18 +1,19 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Crypto Trading Agent Backend",
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "watch": "node --watch app.js"
+    "dev": "node --watch app.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mssql": "^11.0.1"
   }
 }
