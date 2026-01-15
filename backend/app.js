@@ -1,8 +1,10 @@
 import Express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import tradingRoutes from './routes/tradingRoutes.js';
+import { getConnection } from './config/database.js';
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
@@ -10,10 +12,28 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(Express.json());
 
-app.get('/', (req, res) => {
-  res.send('Crypto Trading Agent Backend is running');
+// Health check
+app.get('/api', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Crypto Trading Agent Backend is running',
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Routes
+app.use('/api', tradingRoutes);
+
+// Initialize database connection and start server
+async function startServer() {
+  try {
+    await getConnection();
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to database:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
