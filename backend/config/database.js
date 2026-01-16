@@ -1,36 +1,44 @@
-import sql from 'mssql';
-
+import sql from 'mssql/msnodesqlv8.js';
 
 const config = {
-  server: process.env.DB_SERVER || '(localdb)\\MSSQLLocalDB',
   database: process.env.DB_NAME || 'trading_db',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    enableArithAbort: true,
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000,
-  },
+  connectionString: `Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=${process.env.DB_NAME || 'trading_db'};Trusted_Connection=yes;`,
 };
 
 let pool = null;
 
+export async function connectDatabase() {
+  try {
+    if (!pool) {
+      console.log('🔌 Connecting to LocalDB with Windows Authentication...');
+      pool = await sql.connect(config);
+      console.log('✅ Database connected successfully');
+    }
+    return pool;
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    console.error('Full error:', error);
+    throw error;
+  }
+}
+
 export async function getConnection() {
   if (!pool) {
-    pool = await sql.connect(config);
-    console.log('Database connected successfully');
+    await connectDatabase();
   }
   return pool;
 }
 
 export async function closeConnection() {
-  if (pool) {
-    await pool.close();
-    pool = null;
+  try {
+    if (pool) {
+      await pool.close();
+      pool = null;
+      console.log('Database connection closed');
+    }
+  } catch (error) {
+    console.error('Error closing database connection:', error);
   }
 }
 
-export default { getConnection, closeConnection };
+export default { connectDatabase, getConnection, closeConnection };

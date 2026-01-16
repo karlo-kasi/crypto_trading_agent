@@ -1,10 +1,10 @@
-import Express from 'express';
+import Express, { Router } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import tradingRoutes from './routes/tradingRoutes.js';
 import { getConnection } from './config/database.js';
 
-dotenv.config({ path: '../.env' });
+dotenv.config();
 
 const app = Express();
 const PORT = process.env.PORT || 3000;
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(Express.json());
 
 // Health check
-app.get('/api', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     message: 'Crypto Trading Agent Backend is running',
